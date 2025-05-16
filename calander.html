@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 100%;
+            height: 100vh;
+            background-image: url("background707.jpg");
+            margin: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #heather {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.7);
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        #heather:hover {
+            background: rgba(200, 0, 0, 0.7);
+        }
+
+        #app {
+            max-width: 1000px;
+            width: 90%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar {
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            padding: 10px;
+            font-size: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        button, select {
+            background: #0078d4;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        button:hover {
+            background: #005ea2;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 6px 12px;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calendar-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-day {
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-day.today {
+            background: #0078d4;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .status-bar {
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html"><button id="heather">×</button></a>
+    <div id="app">
+        <div class="toolbar">
+            <button onclick="prevMonth()">ماه قبل</button>
+            <button onclick="nextMonth()">ماه بعد</button>
+            <select id="yearSelect" onchange="updateCalendar()"></select>
+            <select id="monthSelect" onchange="updateCalendar()"></select>
+        </div>
+        <div class="main-container">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <h2 id="calendarTitle"></h2>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>تقویم هجری شمسی</span>
+        </div>
+    </div>
+    <script>
+        const months = [
+            'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+            'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+        ];
+        const days = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
+
+        // تبدیل تاریخ میلادی به هجری شمسی
+        function toPersianDate(gregorianDate) {
+            const jd = gregorianToJulian(gregorianDate);
+            const persian = julianToPersian(jd);
+            return {
+                year: persian[0],
+                month: persian[1],
+                day: persian[2],
+                dayOfWeek: gregorianDate.getDay() // 0 (یک‌شنبه) تا 6 (شنبه)
+            };
+        }
+
+        function gregorianToJulian(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const a = Math.floor((14 - month) / 12);
+            const y = year + 4800 - a;
+            const m = month + 12 * a - 3;
+            return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+        }
+
+        function julianToPersian(jd) {
+            jd = Math.floor(jd) + 0.5;
+            const de = jd - 2121446;
+            const cycle = Math.floor(de / 1029983);
+            const cyear = de % 1029983;
+            const ycycle = Math.floor(cyear / 366);
+            const aux = cyear % 366;
+            let year = Math.floor((aux - (aux >= 366 ? 1 : 0)) / 365) + ycycle * 33 + cycle * 2820 + 1391;
+            let dayOfYear = de - Math.floor((year - 1391) * 365.24219858156) - cycle * 1029983 - Math.floor(ycycle / 33) * 12053;
+            if (dayOfYear <= 0) {
+                year--;
+                dayOfYear = Math.floor((year - 1391) * 365.24219858156) + cycle * 1029983 + Math.floor(ycycle / 33) * 12053 + de;
+            }
+            let month = Math.ceil(dayOfYear / 30.5);
+            if (month > 12) month = 12;
+            const day = Math.floor(dayOfYear - (month - 1) * 30.5 + (month > 6 ? 0.5 : 0));
+            return [year, month, day];
+        }
+
+        // محاسبه تعداد روزهای ماه
+        function getDaysInPersianMonth(year, month) {
+            if (month <= 6) return 31;
+            if (month <= 11) return 30;
+            return isPersianLeapYear(year) ? 30 : 29;
+        }
+
+        function isPersianLeapYear(year) {
+            const cycle = (year - 1391) % 33;
+            return [1, 5, 9, 13, 17, 21, 25, 29].includes(cycle);
+        }
+
+        // تاریخ فعلی
+        let currentDate = toPersianDate(new Date());
+
+        function populateYearMonth() {
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+            yearSelect.innerHTML = '';
+            monthSelect.innerHTML = '';
+
+            // پر کردن سال‌ها (1300 تا 1450)
+            for (let i = 1300; i <= 1450; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.text = i;
+                yearSelect.appendChild(option);
+            }
+
+            // پر کردن ماه‌ها
+            months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.text = month;
+                monthSelect.appendChild(option);
+            });
+
+            yearSelect.value = currentDate.year;
+            monthSelect.value = currentDate.month;
+        }
+
+        function updateCalendar() {
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+            const year = parseInt(yearSelect.value);
+            const month = parseInt(monthSelect.value);
+            currentDate = { year, month, day: 1 };
+
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarTitle = document.getElementById('calendarTitle');
+            calendarGrid.innerHTML = '';
+
+            calendarTitle.textContent = `${months[month - 1]} ${year}`;
+
+            // اضافه کردن نام روزها
+            days.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
+            });
+
+            // محاسبه روز اول ماه
+            const firstDayGregorian = new Date(year - 1391 + 1970, month - 1, 1);
+            const firstDayPersian = toPersianDate(firstDayGregorian);
+            let firstDayOfWeek = firstDayPersian.dayOfWeek;
+            if (firstDayOfWeek === 0) firstDayOfWeek = 7; // تبدیل یک‌شنبه (0) به شنبه (7)
+
+            const daysInMonth = getDaysInPersianMonth(year, month);
+
+            // اضافه کردن روزهای خالی
+            for (let i = 1; i < firstDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // اضافه کردن روزهای ماه
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = i;
+                const today = toPersianDate(new Date());
+                if (i === today.day && month === today.month && year === today.year) {
+                    dayElement.classList.add('today');
+                }
+                dayElement.onclick = () => alert(`تاریخ انتخاب‌شده: ${i} ${months[month - 1]} ${year}`);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function prevMonth() {
+            currentDate.month--;
+            if (currentDate.month < 1) {
+                currentDate.month = 12;
+                currentDate.year--;
+            }
+            document.getElementById('yearSelect').value = currentDate.year;
+            document.getElementById('monthSelect').value = currentDate.month;
+            updateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.month++;
+            if (currentDate.month > 12) {
+                currentDate.month = 1;
+                currentDate.year++;
+            }
+            document.getElementById('yearSelect').value = currentDate.year;
+            document.getElementById('monthSelect').value = currentDate.month;
+            updateCalendar();
+        }
+
+        // اجرای اولیه
+        document.addEventListener('DOMContentLoaded', () => {
+            populateYearMonth();
+            updateCalendar();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS Tetris (Windows 11 Style)</title>
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      background-image: url("gameb2.png");
+      margin: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #heather {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 0, 0, 0.7);
+      color: #ffffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    #heather:hover {
+      background: rgba(200, 0, 0, 0.7);
+    }
+
+    .window {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.6s ease-out;
+      width: 340px; /* Adjusted for canvas size + padding */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title-bar {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      text-align: center;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #tetrisCanvas {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .game-info {
+      color: #ffffff;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .game-info div {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background 0.2s;
+    }
+
+    .game-info div:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <a href="gameland.html"><button id="heather">×</button></a>
+  <div class="window">
+    <div class="title-bar">تتریس Rezno OS</div>
+    <canvas id="tetrisCanvas" width="300" height="500"></canvas>
+    <div class="game-info">
+      <div id="score">امتیاز: 0</div>
+      <div id="level">سطح: 1</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('tetrisCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const levelElement = document.getElementById('level');
+
+    // Game variables
+    let score = 0;
+    let level = 1;
+    let dropCounter = 0;
+    let dropInterval = 1000;
+    let lastTime = 0;
+
+    // Tetris pieces
+    const pieces = [
+      { shape: [[1, 1, 1, 1]], color: '#00ffff' }, // I
+      { shape: [[1, 1], [1, 1]], color: '#ffff00' }, // O
+      { shape: [[0, 1, 0], [1, 1, 1]], color: '#aa00ff' }, // T
+      { shape: [[1, 1, 0], [0, 1, 1]], color: '#ff0000' }, // S
+      { shape: [[0, 1, 1], [1, 1, 0]], color: '#00ff00' }, // Z
+      { shape: [[1, 0, 0], [1, 1, 1]], color: '#0000ff' }, // L
+      { shape: [[0, 0, 1], [1, 1, 1]], color: '#ff7f00' }  // J
+    ];
+
+    // Game board
+    const board = Array.from({ length: 20 }, () => Array(10).fill(0));
+
+    // Current piece
+    let player = {
+      pos: { x: 5, y: 0 },
+      piece: null
+    };
+
+    // Initialize game
+    function init() {
+      spawnPiece();
+      updateScore();
+      window.requestAnimationFrame(update);
+    }
+
+    // Spawn new piece
+    function spawnPiece() {
+      const randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
+      player.piece = {
+        shape: randomPiece.shape,
+        color: randomPiece.color
+      };
+      player.pos.y = 0;
+      player.pos.x = Math.floor(board[0].length / 2) - Math.floor(player.piece.shape[0].length / 2);
+      
+      // Game over check
+      if (collide()) {
+        alert(`بجادوبازی تمام شد! امتیاز نهایی: ${score}`);
+        resetGame();
+      }
+    }
+
+    // Draw the game
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw board
+      board.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value) {
+            ctx.fillStyle = value;
+            ctx.fillRect(x * 30, y * 25, 30, 25);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.strokeRect(x * 30, y * 25, 30, 25);
+          }
+        });
+      });
+      
+      // Draw current piece
+      if (player.piece) {
+        player.piece.shape.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (value) {
+              ctx.fillStyle = player.piece.color;
+              ctx.fillRect(
+                (player.pos.x + x) * 30,
+                (player.pos.y + y) * 25,
+                30, 25
+              );
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+              ctx.strokeRect(
+                (player.pos.x + x) * 30,
+                (player.pos.y + y) * 25,
+                30, 25
+              );
+            }
+          });
+        });
+      }
+    }
+
+    // Game update loop
+    function update(time = 0) {
+      const deltaTime = time - lastTime;
+      lastTime = time;
+      
+      dropCounter += deltaTime;
+      if (dropCounter > dropInterval) {
+        playerDrop();
+        dropCounter = 0;
+      }
+      
+      draw();
+      window.requestAnimationFrame(update);
+    }
+
+    // Player movement
+    function playerMove(dir) {
+      player.pos.x += dir;
+      if (collide()) {
+        player.pos.x -= dir;
+      }
+    }
+
+    function playerRotate() {
+      const originalShape = player.piece.shape;
+      // Transpose matrix
+      const rows = player.piece.shape.length;
+      const cols = player.piece.shape[0].length;
+      const newShape = Array.from({ length: cols }, () => Array(rows).fill(0));
+      
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          newShape[x][rows - 1 - y] = player.piece.shape[y][x];
+        }
+      }
+      
+      player.piece.shape = newShape;
+      if (collide()) {
+        player.piece.shape = originalShape;
+      }
+    }
+
+    function playerDrop() {
+      player.pos.y++;
+      if (collide()) {
+        player.pos.y--;
+        merge();
+        clearLines();
+        spawnPiece();
+      }
+    }
+
+    // Collision detection
+    function collide() {
+      const [shape, pos] = [player.piece.shape, player.pos];
+      for (let y = 0; y < shape.length; y++) {
+        for (let x = 0; x < shape[y].length; x++) {
+          if (shape[y][x] !== 0 &&
+              (board[y + pos.y] &&
+              board[y + pos.y][x + pos.x]) !== 0) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Merge piece with board
+    function merge() {
+      player.piece.shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value) {
+            board[y + player.pos.y][x + player.pos.x] = player.piece.color;
+          }
+        });
+      });
+    }
+
+    // Clear completed lines
+    function clearLines() {
+      let linesCleared = 0;
+      
+      outer: for (let y = board.length - 1; y >= 0; y--) {
+        for (let x = 0; x < board[y].length; x++) {
+          if (board[y][x] === 0) {
+            continue outer;
+          }
+        }
+        
+        // Remove the line
+        const line = board.splice(y, 1)[0].fill(0);
+        board.unshift(line);
+        y++;
+        
+        linesCleared++;
+      }
+      
+      // Update score
+      if (linesCleared > 0) {
+        score += [0, 40, 100, 300, 1200][linesCleared] * level;
+        level = Math.floor(score / 1000) + 1;
+        dropInterval = 1000 / level;
+        updateScore();
+      }
+    }
+
+    function updateScore() {
+      scoreElement.textContent = `امتیاز: ${score}`;
+      levelElement.textContent = `سطح: ${level}`;
+    }
+
+    function resetGame() {
+      board.forEach(row => row.fill(0));
+      score = 0;
+      level = 1;
+      dropInterval = 1000;
+      updateScore();
+      spawnPiece();
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', e => {
+      if (!player.piece) return;
+      
+      switch (e.keyCode) {
+        case 37: // Left
+          playerMove(-1);
+          break;
+        case 39: // Right
+          playerMove(1);
+          break;
+        case 40: // Down
+          playerDrop();
+          break;
+        case 38: // Up
+          playerRotate();
+          break;
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

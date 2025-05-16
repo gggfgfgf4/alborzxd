@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>اتمام؟</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: brown;
+      font-family: Tahoma, sans-serif;
+      overflow: hidden;
+      direction: rtl;
+    }
+
+    .xp-window {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      border: 2px solid #003399;
+      background-color: #e0e0e0;
+      box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .title-bar {
+      background: linear-gradient(to right, #0a246a, #3a6ea5);
+      color: white;
+      padding: 5px 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .title-bar button {
+      background-color: red;
+      border: 1px solid #fff;
+      color: white;
+      font-weight: bold;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .content {
+      padding: 20px;
+      font-size: 14px;
+      color: black;
+    }
+
+    #runawayBtn {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 30px;
+      font-size: 14px;
+      font-weight: bold;
+      background-color: #d6d6d6;
+      border: 2px outset #fff;
+      box-shadow: 2px 2px 0 #999;
+      cursor: pointer;
+      transition: top 0.2s, left 0.2s;
+    }
+
+    #runawayBtn.tired {
+      background-color: #bbb;
+      border: 2px inset #888;
+      cursor: pointer;
+    }
+
+    .scary-text {
+      position: absolute;
+      top: 5%;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: red;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .ghost {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: url('https://i.imgur.com/MQZTjMI.png') no-repeat center;
+      background-size: cover;
+      opacity: 0.2;
+      animation: float 5s infinite alternate;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(20px); }
+    }
+  </style>
+</head>
+<body>
+<button id="runawayBtn">😁 اتمام</button>
+  <div class="ghost" style="top: 30%; left: 10%;"></div>
+  <div class="ghost" style="top: 70%; left: 75%;"></div>
+
+  <script>
+    const button = document.getElementById('runawayBtn');
+    let canClick = false;
+
+    const moveButton = () => {
+      if (!canClick) {
+        const maxX = window.innerWidth - button.offsetWidth;
+        const maxY = window.innerHeight - button.offsetHeight;
+        const newX = Math.random() * maxX;
+        const newY = Math.random() * maxY;
+        button.style.left = newX + 'px';
+        button.style.top = newY + 'px';
+      }
+    };
+
+    document.addEventListener('mousemove', (e) => {
+      const rect = button.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 150 && !canClick) {
+        moveButton();
+      }
+    });
+
+    setTimeout(() => {
+      canClick = true;
+      button.classList.add('tired');
+      button.innerText = 'اتمام🥱';
+    }, 60000);
+
+    button.addEventListener('click', () => {
+      if (canClick) {
+        window.location.href = "realend.html";
+      }
+    });
+  </script>
+</body>
+</html>

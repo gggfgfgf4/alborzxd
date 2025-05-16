@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+    body {
+        width: 100%;
+        height: 100vh;
+        background-image: url("backgroundstart.jpg");
+        margin: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    #heather {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 0, 0, 0.7);
+        color: #ffffff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    #heather:hover {
+        background: rgba(200, 0, 0, 0.7);
+    }
+
+    #app {
+        max-width: 1000px;
+        width: 90%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeIn 0.6s ease-out;
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toolbar {
+        background: rgba(0, 0, 0, 0.6);
+        color: #ffffff;
+        padding: 10px;
+        font-size: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        justify-content: center;
+    }
+
+    .app-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+        justify-items: center;
+    }
+
+    .app-button {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+        animation: popIn 0.3s ease-out;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100px;
+        text-align: center;
+    }
+
+    @keyframes popIn {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .app-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+    .app-button:active {
+        transform: scale(0.95);
+    }
+
+    .app-button img {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 8px;
+    }
+
+    .status-bar {
+        background: rgba(0, 0, 0, 0.6);
+        color: #ffffff;
+        padding: 8px 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+    }
+
+    .virus-window {
+        position: absolute;
+        width: 300px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        padding: 10px;
+        font-size: 14px;
+        animation: shake 0.3s infinite alternate;
+        z-index: 9999;
+        border-radius: 8px;
+    }
+
+    .virus-title-bar {
+        background: rgba(186, 62, 0, 0.9);
+        color: #ffffff;
+        padding: 6px;
+        font-weight: bold;
+        font-size: 13px;
+        text-align: center;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .virus-content {
+        padding: 10px;
+        color: #ffffff;
+    }
+
+    @keyframes shake {
+        from { transform: translate(0px, 0px); }
+        to { transform: translate(3px, -3px); }
+    }
+    .blackout {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 999999;
+    }
+</style>
+</head>
+<body>
+    <audio id="virus-sound" src="virus.mp3" preload="auto"></audio>
+    <a href="home.html"><button id="heather">×</button></a>
+    <div id="app">
+        <div class="app-grid">
+            <a href="paint.html" class="app-button"><button><img src="paint.png">نقاشی</button></a>
+            <a href="wikisearch.html" class="app-button"><button><img src="wiki.png">ویکی‌جستجو</button></a>
+            <a href="word.html" class="app-button"><button><img src="word.png">ورد</button></a>
+            <a href="gameland.html" class="app-button"><button><img src="minesweper.png">بازی‌ها</button></a>
+            <a href="media.html" class="app-button"><button><img src="media.png">پخش‌کننده رسانه</button></a>
+            <a href="calculator.html" class="app-button"><button><img src="calculator.png">ماشین‌حساب</button></a>
+            <a href="ppt.html" class="app-button"><button><img src="PPT.png">پاورپوینت</button></a>
+            <a href="notes.html" class="app-button"><button><img src="notes.png">یادداشت‌ها</button></a>
+            <a href="pdf-r.html" class="app-button"><button><img src="pdf.png">خواننده PDF</button></a>
+            <a href="trois.html" class="app-button"><button><img src="toris.png">توریس</button></a>
+            <button id="virus-btn" class="app-button">TRTHJMHM,</button>
+            <a href="excel.html" class="app-button"><button><img src="excel.png">اکسل</button></a>
+            <a href="insta.html" class="app-button"><button><img src="insta.png">اینستاگرام</button></a>
+            <a href="P-S.html" class="app-button"><button><img src="photoshop.jpg">فوتوشوپ</button></a>
+            <a href="news.html" class="app-button"><button><img src="news.png">اخبار</button></a>
+            <a href="utub.html" class="app-button"><button><img src="utub.jpg">یوتیوب</button></a>
+            <a href="whatsup.html" class="app-button"><button><img src="WhatsApp.png">واتساپ</button></a>
+            <a href="vs-coad.html" class="app-button"><button><img src="vs.png">ویژوال استودیو کد</button></a>
+            <a href="Access.html" class="app-button"><button><img src="Access.png">اکسس</button></a>
+            <a href="calander.html" class="app-button"><button><img src="calander.png">تقویم</button></a>
+        </div>
+        <div class="status-bar">
+            <span>start menu</span>
+            <a href="index.html"><button style="background: #0078d4; padding: 6px 12px; border-radius: 8px;">خاموش کردن</button></a>
+        </div>
+    </div>
+    <script>
+        // وضعیت برنامه
+        const state = {
+            virusActivated: false,
+            messageCount: 0
+        };
+
+        const colors = ["#00ff00", "#ff0000", "#00ffff", "#ff00ff", "#ffff00", "#ffffff"];
+
+        // تولید متن تصادفی
+        function randomText(length = 30) {
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return result;
+        }
+
+        // ایجاد پنجره ویروس
+        function createVirusWindow() {
+            const win = document.createElement("div");
+            win.className = "virus-window";
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+            win.style.top = Math.floor(Math.random() * (window.innerHeight - 160)) + "px";
+            win.style.left = Math.floor(Math.random() * (window.innerWidth - 310)) + "px";
+            win.style.color = randomColor;
+
+            win.innerHTML = `
+                <div class="virus-title-bar">هشدار ویروس!</div>
+                <div class="virus-content">${randomText(50)}</div>
+            `;
+
+            document.body.appendChild(win);
+
+            // پخش صدا
+            const sound = document.getElementById("virus-sound");
+            sound.currentTime = 0;
+            sound.play();
+
+            // افکت فلش سیاه
+            if (Math.random() < 0.3) {
+                flashBlackout();
+            }
+
+            // تغییر پس‌زمینه بعد از ۵ پیام
+            state.messageCount++;
+            if (state.messageCount === 5) {
+                document.body.style.backgroundImage = 'url("virusb.png")';
+                document.body.style.backgroundColor = "#000";
+            }
+        }
+
+        // افکت فلش سیاه
+        function flashBlackout() {
+            const blackout = document.createElement("div");
+            blackout.className = "blackout";
+            document.body.appendChild(blackout);
+            setTimeout(() => {
+                blackout.remove();
+            }, 200);
+        }
+
+        // راه‌اندازی برنامه
+        function init() {
+            document.getElementById("virus-btn").addEventListener("click", () => {
+                if (!state.virusActivated) {
+                    setInterval(createVirusWindow, 1000);
+                    state.virusActivated = true;
+                    
+                    // اضافه کردن ریدایرکت بعد از 7 ثانیه
+                    setTimeout(() => {
+                        window.location.href = "indexh.html";
+                    }, 7000);
+                }
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

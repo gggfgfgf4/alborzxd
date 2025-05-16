@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS Spreadsheet (Windows 11 Style)</title>
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      background-image: url("background707.jpg");
+      margin: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      overflow: hidden;
+    }
+
+    #heather {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 0, 0, 0.7);
+      color: #ffffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    #heather:hover {
+      background: rgba(200, 0, 0, 0.7);
+    }
+
+    .window {
+      width: 800px;
+      height: 600px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -48%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    .title-bar {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    .title-bar-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .title-bar-button {
+      width: 24px;
+      height: 24px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .title-bar-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .menu-bar {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px;
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-item {
+      padding: 5px 15px;
+      cursor: pointer;
+      color: #ffffff;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .menu-item:hover {
+      background: #0078d4;
+    }
+
+    .toolbar {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px;
+      display: flex;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tool-button {
+      width: 28px;
+      height: 28px;
+      margin: 2px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .tool-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .formula-bar {
+      display: flex;
+      padding: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .formula-bar label {
+      margin-left: 10px;
+      color: #ffffff;
+    }
+
+    .formula-bar input {
+      flex-grow: 1;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 5px;
+      background: transparent;
+      color: #ffffff;
+      border-radius: 4px;
+    }
+
+    .sheet-container {
+      flex-grow: 1;
+      overflow: auto;
+      background: #ffffff;
+    }
+
+    .sheet {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .sheet td {
+      border: 1px solid #d1d1d1;
+      min-width: 80px;
+      height: 24px;
+      padding: 0;
+      position: relative;
+    }
+
+    .sheet td.header {
+      background: rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .sheet input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0 5px;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 14px;
+    }
+
+    .sheet input:focus {
+      outline: 2px solid #0078d4;
+    }
+
+    .status-bar {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+      color: #ffffff;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .context-menu {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .context-menu-item {
+      padding: 8px 20px;
+      cursor: pointer;
+      color: #ffffff;
+      border-radius: 4px;
+    }
+
+    .context-menu-item:hover {
+      background: #0078d4;
+    }
+
+    .file-dialog {
+      position: absolute;
+      width: 400px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .file-dialog-title {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    .file-dialog-content {
+      padding: 15px;
+      flex-grow: 1;
+      color: #ffffff;
+    }
+
+    .file-dialog-buttons {
+      padding: 10px;
+      text-align: left;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dialog-button {
+      padding: 8px 16px;
+      margin-right: 5px;
+      background: #0078d4;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .dialog-button:hover {
+      background: #005ea2;
+    }
+
+    .file-list {
+      width: 100%;
+      height: 200px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 10px;
+      overflow: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .file-name-input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      color: #ffffff;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <a href="home.html"><button id="heather">×</button></a>
+  <div id="app-section">
+    <div class="window" id="mainWindow">
+      <div class="title-bar" id="titleBar">
+        <span>excel</span>
+        <div class="title-bar-buttons">
+          <div class="title-bar-button" onclick="document.getElementById('mainWindow').style.display='none'">×</div>
+        </div>
+      </div>
+      <div class="menu-bar">
+        <div class="menu-item" id="fileMenu">فایل</div>
+        <div class="menu-item">ویرایش</div>
+        <div class="menu-item">نمایش</div>
+        <div class="menu-item">درج</div>
+        <div class="menu-item">قالب</div>
+        <div class="menu-item">ابزارها</div>
+        <div class="menu-item">داده</div>
+        <div class="menu-item">پنجره</div>
+        <div class="menu-item">راهنما</div>
+      </div>
+      <div class="toolbar">
+        <button class="tool-button" title="جدید">N</button>
+        <button class="tool-button" title="باز کردن">O</button>
+        <button class="tool-button" title="ذخیره">S</button>
+        <button class="tool-button" title="چاپ">P</button>
+        <div style="width: 10px;"></div>
+        <button class="tool-button" title="برش">C</button>
+        <button class="tool-button" title="کپی">Y</button>
+        <button class="tool-button" title="جایگذاری">V</button>
+        <div style="width: 10px;"></div>
+        <button class="tool-button" title="حذف فرمت">E</button>
+        <button class="tool-button" title="پر کردن رنگ">F</button>
+        <div style="width: 10px;"></div>
+        <button class="tool-button" title="درشت">B</button>
+        <button class="tool-button" title="ایتالیک">I</button>
+        <button class="tool-button" title="زیرخط">U</button>
+      </div>
+      <div class="formula-bar">
+        <label>نوار فرمول:</label>
+        <input type="text" id="formulaInput">
+      </div>
+      <div class="sheet-container">
+        <table class="sheet" id="spreadsheet">
+          <tr>
+            <td class="header"></td>
+            <!-- Column headers (A, B, C, ...) -->
+          </tr>
+          <!-- Rows will be added by JavaScript -->
+        </table>
+      </div>
+      <div class="status-bar">
+        <div>آماده</div>
+        <div>سلول: A1</div>
+      </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+      <div class="context-menu-item" id="cutMenuItem">برش</div>
+      <div class="context-menu-item" id="copyMenuItem">کپی</div>
+      <div class="context-menu-item" id="pasteMenuItem">جایگذاری</div>
+      <div class="context-menu-item" id="clearMenuItem">پاک کردن</div>
+    </div>
+
+    <!-- File Dialog -->
+    <div class="file-dialog" id="fileDialog">
+      <div class="file-dialog-title">
+        <span id="dialogTitle">ذخیره فایل</span>
+        <div class="title-bar-button" id="closeDialogBtn">×</div>
+      </div>
+      <div class="file-dialog-content">
+        <div class="file-list" id="fileList">
+          <!-- Files will be listed here -->
+        </div>
+        <input type="text" class="file-name-input" id="fileNameInput" placeholder="نام فایل">
+      </div>
+      <div class="file-dialog-buttons">
+        <button class="dialog-button" id="saveBtn">ذخیره</button>
+        <button class="dialog-button" id="cancelBtn">انصراف</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize spreadsheet
+    document.addEventListener('DOMContentLoaded', function() {
+      const spreadsheet = document.getElementById('spreadsheet');
+      const cols = 26;
+      const rows = 50;
+
+      // Create column headers (A, B, C, ...)
+      const headerRow = spreadsheet.querySelector('tr');
+      for (let i = 0; i < cols; i++) {
+        const th = document.createElement('td');
+        th.className = 'header';
+        th.textContent = String.fromCharCode(65 + i);
+        headerRow.appendChild(th);
+      }
+
+      // Create rows
+      for (let i = 1; i <= rows; i++) {
+        const tr = document.createElement('tr');
+        // Row header (1, 2, 3, ...)
+        const th = document.createElement('td');
+        th.className = 'header';
+        th.textContent = i;
+        tr.appendChild(th);
+
+        // Cells
+        for (let j = 0; j < cols; j++) {
+          const td = document.createElement('td');
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.dataset.row = i;
+          input.dataset.col = String.fromCharCode(65 + j);
+
+          input.addEventListener('focus', function() {
+            document.querySelector('.status-bar div:last-child').textContent = 
+              `سلول: ${input.dataset.col}${input.dataset.row}`;
+            document.getElementById('formulaInput').value = input.value;
+          });
+
+          input.addEventListener('input', function() {
+            document.getElementById('formulaInput').value = input.value;
+          });
+
+          input.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showContextMenu(e, input);
+          });
+
+          td.appendChild(input);
+          tr.appendChild(td);
+        }
+
+        spreadsheet.appendChild(tr);
+      }
+
+      // File menu functionality
+      const fileMenu = document.getElementById('fileMenu');
+      fileMenu.addEventListener('click', function() {
+        showFileDialog('ذخیره فایل');
+      });
+
+      // Save button in toolbar
+      document.querySelector('.toolbar button[title="ذخیره"]').addEventListener('click', function() {
+        showFileDialog('ذخیره فایل');
+      });
+
+      // Make window draggable
+      makeDraggable(document.getElementById('titleBar'), document.getElementById('mainWindow'));
+    });
+
+    function showContextMenu(e, input) {
+      const contextMenu = document.getElementById('contextMenu');
+      contextMenu.style.display = 'block';
+      contextMenu.style.left = `${e.pageX}px`;
+      contextMenu.style.top = `${e.pageY}px`;
+
+      // Close menu when clicking elsewhere
+      document.addEventListener('click', function closeMenu() {
+        contextMenu.style.display = 'none';
+        document.removeEventListener('click', closeMenu);
+      }, { once: true });
+
+      // Menu items functionality
+      document.getElementById('cutMenuItem').onclick = function() {
+        navigator.clipboard.writeText(input.value);
+        input.value = '';
+      };
+
+      document.getElementById('copyMenuItem').onclick = function() {
+        navigator.clipboard.writeText(input.value);
+      };
+
+      document.getElementById('pasteMenuItem').onclick = function() {
+        navigator.clipboard.readText().then(text => {
+          input.value = text;
+        });
+      };
+
+      document.getElementById('clearMenuItem').onclick = function() {
+        input.value = '';
+      };
+    }
+
+    function showFileDialog(title) {
+      const dialog = document.getElementById('fileDialog');
+      document.getElementById('dialogTitle').textContent = title;
+      dialog.style.display = 'flex';
+
+      // Position dialog in center
+      dialog.style.left = `${window.innerWidth / 2 - 200}px`;
+      dialog.style.top = `${window.innerHeight / 2 - 150}px`;
+
+      // Close dialog
+      document.getElementById('closeDialogBtn').onclick = function() {
+        dialog.style.display = 'none';
+      };
+
+      document.getElementById('cancelBtn').onclick = function() {
+        dialog.style.display = 'none';
+      };
+
+      // Save functionality
+      document.getElementById('saveBtn').onclick = function() {
+        const fileName = document.getElementById('fileNameInput').value;
+        if (fileName) {
+          saveFile(fileName);
+          dialog.style.display = 'none';
+        }
+      };
+    }
+
+    function saveFile(fileName) {
+      const data = [];
+      const inputs = document.querySelectorAll('#spreadsheet input');
+
+      inputs.forEach(input => {
+        const row = input.dataset.row;
+        const col = input.dataset.col;
+        const value = input.value;
+
+        if (value) {
+          data.push({
+            cell: `${col}${row}`,
+            value: value
+          });
+        }
+      });
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${fileName}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function makeDraggable(dragElement, targetElement) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+      dragElement.onmousedown = dragMouseDown;
+
+      function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        targetElement.style.top = (targetElement.offsetTop - pos2) + "px";
+        targetElement.style.left = (targetElement.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+  </script>
+</body>
+</html>

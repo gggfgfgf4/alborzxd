@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS (Windows 11 Style)</title>
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      background-image: url("background.jpg");
+      margin: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #ffffff;
+    }
+
+    /* تسکبار */
+    #taskbar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 48px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1001;
+    }
+
+    #botton-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    #botton {
+      background: transparent;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    #botton:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #botton img {
+      width: 24px;
+      height: 24px;
+    }
+
+    #start-time {
+      position: absolute;
+      left: 10px;
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    /* منوی اپلیکیشن‌ها */
+    #applist {
+      position: fixed;
+      right: -300px;
+      top: 0;
+      bottom: 48px;
+      width: 300px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+      transition: right 0.3s ease;
+    }
+
+    #applist.active {
+      right: 0;
+    }
+
+    #appimg {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+    }
+
+    .app-link button {
+      background: transparent;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .app-link button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* پنجره‌های iframe */
+    .iframe-window {
+      position: absolute;
+      width: 600px;
+      height: 400px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .iframe-titlebar {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      user-select: none;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    .iframe-title {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    .iframe-controls {
+      display: flex;
+      gap: 5px;
+    }
+
+    .iframe-btn {
+      width: 24px;
+      height: 24px;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .iframe-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .iframe-content {
+      flex: 1;
+      background: #ffffff;
+      overflow: hidden;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+        /* استایل منوی راست‌کلیک */
+        .context-menu {
+            position: absolute;
+            background: #fff;
+            border: 1px solid #d1d1d1;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 200px;
+            padding: 5px 0;
+            display: none;
+            z-index: 1000;
+        }
+
+        .context-menu div {
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .context-menu div:hover {
+            background: #e6f3ff;
+            color: #000;
+        }
+
+        .context-menu h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .context-menu button {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            color: inherit;
+            padding: 0;
+            margin-left: 10px;
+        }
+  </style>
+</head>
+<body>
+  <audio id="myAudio" autoplay>
+    <source src="bootup.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="iframeContainer"></div>
+  <div id="start-time" class="timebar" id="MyClockDisplay"></div>
+  <div id="taskbar">
+    <div id="botton-container">
+      <button id="botton" onclick="toggleAppList()"><img src="apps.png" alt="apps">اپ ها</button>
+      <a href="lockino.html" style="color: black;"><button id="botton"><img src="lock.png" alt="apps">قفل کردن</button></a>
+    </div>
+  </div>
+  <div id="applist">
+    <div class="app-link">
+      <button onclick="window.location.href='start.html'"><img id="appimg" src="start.png"> استارت</button>
+    </div>
+    <div class="app-link" data-url="ppt.html">
+      <button onclick="openInIframe('ppt.html', 'پاورپوینت')"><img id="appimg" src="ppt.png"> پاورپوینت</button>
+    </div>
+    <div class="app-link" data-url="word.html">
+      <button onclick="openInIframe('word.html', 'ورد')"><img id="appimg" src="word.png"> ورد</button>
+    </div>
+    <div class="app-link" data-url="gameland.html">
+      <button onclick="openInIframe('gameland.html', 'بازی‌ها')"><img id="appimg" src="minesweper.png"> بازی‌ها</button>
+    </div>
+    <div class="app-link" data-url="media.html">
+      <button onclick="openInIframe('media.html', 'مدیا')"><img id="appimg" src="media.png"> مدیا</button>
+    </div>
+    <div class="app-link" data-url="vs-coad.html">
+      <button onclick="openInIframe('vs-coad.html', 'ویژوال استودیو')"><img id="appimg" src="vs.png"> ویژوال استودیو</button>
+    </div>
+    <div class="app-link" data-url="trois.html">
+      <button onclick="openInIframe('trois.html', 'تور')"><img id="appimg" src="toris.png"> تور</button>
+    </div>
+    <div class="app-link" data-url="excel.html">
+      <button onclick="openInIframe('excel.html', 'اکسل')"><img id="appimg" src="excel.png"> اکسل</button>
+    </div>
+  </div>
+  <script>
+    function showTime() {
+      var date = new Date();
+      var h = date.getHours();
+      var m = date.getMinutes();
+      var s = date.getSeconds();
+      var session = "AM";
+      if (h == 0) h = 12;
+      if (h > 12) {
+        h = h - 12;
+        session = "PM";
+      }
+      h = (h < 10) ? "0" + h : h;
+      m = (m < 10) ? "0" + m : m;
+      s = (s < 10) ? "0" + s : s;
+      var time = h + ":" + m + ":" + s + " " + session;
+      document.getElementById("MyClockDisplay").innerText = time;
+      setTimeout(showTime, 1000);
+    }
+
+    showTime();
+
+    window.onload = function() {
+      var audio = document.getElementById('myAudio');
+      audio.volume = 1.0;
+
+      document.querySelectorAll('.app-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          if (this.dataset.url) {
+            e.preventDefault();
+            openInIframe(this.dataset.url, this.querySelector('button').textContent);
+          }
+        });
+      });
+    };
+
+    function toggleAppList() {
+      const applist = document.getElementById('applist');
+      applist.classList.toggle('active');
+    }
+
+    function openInIframe(url, title) {
+      const windowId = 'window-' + Date.now();
+      const windowHtml = `
+        <div class="iframe-window" id="${windowId}" style="top: 100px; left: 100px;">
+          <div class="iframe-titlebar">
+            <span class="iframe-title">${title}</span>
+            <div class="iframe-controls">
+              <div class="iframe-btn" onclick="maximizeWindow('${windowId}', '${url}')">□</div>
+              <div class="iframe-btn" onclick="closeWindow('${windowId}')">×</div>
+            </div>
+          </div>
+          <div class="iframe-content">
+            <iframe src="${url}"></iframe>
+          </div>
+        </div>
+      `;
+      document.getElementById('iframeContainer').insertAdjacentHTML('beforeend', windowHtml);
+      makeDraggable(windowId);
+      document.getElementById(windowId).style.display = 'flex';
+    }
+
+    function makeDraggable(windowId) {
+      const windowElement = document.getElementById(windowId);
+      const titleBar = windowElement.querySelector('.iframe-titlebar');
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+      titleBar.onmousedown = dragMouseDown;
+
+      function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        windowElement.style.top = (windowElement.offsetTop - pos2) + "px";
+        windowElement.style.left = (windowElement.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+
+    function maximizeWindow(windowId, url) {
+      window.location.href = url;
+    }
+
+    function closeWindow(windowId) {
+      const windowElement = document.getElementById(windowId);
+      if (windowElement) windowElement.remove();
+    }
+    const contextMenu = document.getElementById('contextMenu');
+
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    contextMenu.style.display = 'block';
+    contextMenu.style.left = `${e.pageX}px`;
+    contextMenu.style.top = `${e.pageY}px`;
+});
+
+document.addEventListener('click', () => {
+    contextMenu.style.display = 'none';
+});
+
+contextMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+  </script>
+</body>
+</html>

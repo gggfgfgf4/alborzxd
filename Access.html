@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsPDF/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            width: 100%;
+            height: 100vh;
+            background-image: url("background707.jpg");
+            margin: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #heather {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.7);
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        #heather:hover {
+            background: rgba(200, 0, 0, 0.7);
+        }
+
+        #app {
+            max-width: 1200px;
+            width: 95%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ribbon {
+            background: linear-gradient(to bottom, #0078d4, #005ea2);
+            padding: 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ribbon-group {
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        button, select, input {
+            background: #0078d4;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        button:hover, select:hover {
+            background: #005ea2;
+            transform: scale(1.05);
+        }
+
+        button:active, select:active {
+            transform: scale(0.95);
+        }
+
+        input, textarea {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .status-bar {
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: right;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            color: #ffffff;
+        }
+
+        .form-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-field {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html"><button id="heather">×</button></a>
+    <div id="app">
+        <div class="ribbon">
+            <div class="ribbon-group">
+                <button onclick="showCreateTableModal()">جدول جدید</button>
+                <button onclick="showFormBuilderModal()">فرم جدید</button>
+                <button onclick="showQueryBuilderModal()">پرس‌وجو</button>
+            </div>
+            <div class="ribbon-group">
+                <button onclick="exportToJson()">خروجی JSON</button>
+                <input type="file" id="importJson" accept=".json" style="display: none;" onchange="importFromJson(event)">
+                <button onclick="document.getElementById('importJson').click()">ورودی JSON</button>
+            </div>
+            <div class="ribbon-group">
+                <button onclick="generateReport()">تولید گزارش</button>
+            </div>
+            <select id="tableSelector" onchange="loadTable()">
+                <option value="">انتخاب جدول</option>
+            </select>
+        </div>
+        <div class="main-container">
+            <div class="sidebar">
+                <h3>اشیاء</h3>
+                <ul id="objectList"></ul>
+            </div>
+            <div class="editor-area">
+                <div id="tableView" class="table-container">
+                    <table id="dataTable">
+                        <thead id="tableHeader"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div id="formView" style="display: none;"></div>
+                <div id="queryView" style="display: none;"></div>
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>Microsoft Access</span>
+        </div>
+    </div>
+
+    <div id="createTableModal" class="modal">
+        <div class="modal-content">
+            <h3>ایجاد جدول جدید</h3>
+            <input type="text" id="newTableName" placeholder="نام جدول">
+            <div id="fieldList">
+                <div class="form-field">
+                    <input type="text" placeholder="نام فیلد">
+                    <select>
+                        <option value="text">متن</option>
+                        <option value="number">عدد</option>
+                        <option value="date">تاریخ</option>
+                    </select>
+                    <button onclick="this.parentElement.remove()">حذف</button>
+                </div>
+            </div>
+            <button onclick="addField()">افزودن فیلد</button>
+            <button onclick="createTable()">ایجاد جدول</button>
+            <button onclick="closeModal('createTableModal')">بستن</button>
+        </div>
+    </div>
+
+    <div id="formBuilderModal" class="modal">
+        <div class="modal-content">
+            <h3>طراحی فرم</h3>
+            <input type="text" id="formName" placeholder="نام فرم">
+            <select id="formTable">
+                <option value="">انتخاب جدول</option>
+            </select>
+            <div id="formFields"></div>
+            <button onclick="addFormField()">افزودن فیلد</button>
+            <button onclick="saveForm()">ذخیره فرم</button>
+            <button onclick="closeModal('formBuilderModal')">بستن</button>
+        </div>
+    </div>
+
+    <div id="queryBuilderModal" class="modal">
+        <div class="modal-content">
+            <h3>ساخت پرس‌وجو</h3>
+            <input type="text" id="queryName" placeholder="نام پرس‌وجو">
+            <select id="queryTable">
+                <option value="">انتخاب جدول</option>
+            </select>
+            <div id="queryConditions"></div>
+            <button onclick="addQueryCondition()">افزودن شرط</button>
+            <button onclick="runQuery()">اجرای پرس‌وجو</button>
+            <button onclick="closeModal('queryBuilderModal')">بستن</button>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        let database = { tables: {}, forms: {}, queries: {} };
+        let currentTable = null;
+        let currentForm = null;
+        let currentQuery = null;
+
+        // Initialize IndexedDB
+        let db;
+        const request = indexedDB.open('WebAccessDB', 1);
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            db.createObjectStore('database', { keyPath: 'id' });
+        };
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            loadDatabase();
+        };
+
+        function saveDatabase() {
+            const transaction = db.transaction(['database'], 'readwrite');
+            const store = transaction.objectStore('database');
+            store.put({ id: 'main', data: database });
+        }
+
+        function loadDatabase() {
+            const transaction = db.transaction(['database'], 'readonly');
+            const store = transaction.objectStore('database');
+            const request = store.get('main');
+            request.onsuccess = (event) => {
+                if (event.target.result) {
+                    database = event.target.result.data;
+                    updateSidebar();
+                    updateTableSelector();
+                }
+            };
+        }
+
+        function updateSidebar() {
+            const objectList = document.getElementById('objectList');
+            objectList.innerHTML = '';
+            Object.keys(database.tables).forEach(table => {
+                const li = document.createElement('li');
+                li.textContent = `جدول: ${table}`;
+                li.onclick = () => loadTable(table);
+                objectList.appendChild(li);
+            });
+            Object.keys(database.forms).forEach(form => {
+                const li = document.createElement('li');
+                li.textContent = `فرم: ${form}`;
+                li.onclick = () => loadForm(form);
+                objectList.appendChild(li);
+            });
+            Object.keys(database.queries).forEach(query => {
+                const li = document.createElement('li');
+                li.textContent = `پرس‌وجو: ${query}`;
+                li.onclick = () => loadQuery(query);
+                objectList.appendChild(li);
+            });
+        }
+
+        function updateTableSelector() {
+            const selector = document.getElementById('tableSelector');
+            const formTable = document.getElementById('formTable');
+            const queryTable = document.getElementById('queryTable');
+            selector.innerHTML = '<option value="">انتخاب جدول</option>';
+            formTable.innerHTML = '<option value="">انتخاب جدول</option>';
+            queryTable.innerHTML = '<option value="">انتخاب جدول</option>';
+            Object.keys(database.tables).forEach(table => {
+                const option = document.createElement('option');
+                option.value = table;
+                option.textContent = table;
+                selector.appendChild(option);
+                formTable.appendChild(option.cloneNode(true));
+                queryTable.appendChild(option.cloneNode(true));
+            });
+        }
+
+        function showCreateTableModal() {
+            document.getElementById('createTableModal').style.display = 'flex';
+            document.getElementById('fieldList').innerHTML = `
+                <div class="form-field">
+                    <input type="text" placeholder="نام فیلد">
+                    <select>
+                        <option value="text">متن</option>
+                        <option value="number">عدد</option>
+                        <option value="date">تاریخ</option>
+                    </select>
+                    <button onclick="this.parentElement.remove()">حذف</button>
+                </div>
+            `;
+        }
+
+        function showFormBuilderModal() {
+            document.getElementById('formBuilderModal').style.display = 'flex';
+            document.getElementById('formFields').innerHTML = '';
+        }
+
+        function showQueryBuilderModal() {
+            document.getElementById('queryBuilderModal').style.display = 'flex';
+            document.getElementById('queryConditions').innerHTML = '';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function addField() {
+            const fieldList = document.getElementById('fieldList');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'form-field';
+            fieldDiv.innerHTML = `
+                <input type="text" placeholder="نام فیلد">
+                <select>
+                    <option value="text">متن</option>
+                    <option value="number">عدد</option>
+                    <option value="date">تاریخ</option>
+                </select>
+                <button onclick="this.parentElement.remove()">حذف</button>
+            `;
+            fieldList.appendChild(fieldDiv);
+        }
+
+        function createTable() {
+            const tableName = document.getElementById('newTableName').value.trim();
+            if (!tableName || database.tables[tableName]) {
+                alert('نام جدول نامعتبر است یا قبلاً وجود دارد.');
+                return;
+            }
+
+            const fields = Array.from(document.getElementById('fieldList').children).map(div => ({
+                name: div.querySelector('input').value.trim(),
+                type: div.querySelector('select').value
+            })).filter(f => f.name);
+
+            if (fields.length === 0) {
+                alert('حداقل یک فیلد لازم است.');
+                return;
+            }
+
+            database.tables[tableName] = { fields, records: [] };
+            saveDatabase();
+            updateSidebar();
+            updateTableSelector();
+            closeModal('createTableModal');
+            loadTable(tableName);
+        }
+
+        function addFormField() {
+            const formFields = document.getElementById('formFields');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'form-field';
+            fieldDiv.innerHTML = `
+                <input type="text" placeholder="برچسب فیلد">
+                <select onchange="updateFieldOptions(this)">
+                    <option value="">انتخاب فیلد</option>
+                </select>
+            `;
+            const tableName = document.getElementById('formTable').value;
+            if (tableName && database.tables[tableName]) {
+                const select = fieldDiv.querySelector('select');
+                database.tables[tableName].fields.forEach(field => {
+                    const option = document.createElement('option');
+                    option.value = field.name;
+                    option.textContent = field.name;
+                    select.appendChild(option);
+                });
+            }
+            formFields.appendChild(fieldDiv);
+        }
+
+        function saveForm() {
+            const formName = document.getElementById('formName').value.trim();
+            const tableName = document.getElementById('formTable').value;
+            if (!formName || !tableName || !database.tables[tableName]) {
+                alert('نام فرم یا جدول نامعتبر است.');
+                return;
+            }
+
+            const fields = Array.from(document.getElementById('formFields').children).map(div => ({
+                label: div.querySelector('input').value.trim(),
+                field: div.querySelector('select').value
+            })).filter(f => f.label && f.field);
+
+            database.forms[formName] = { table: tableName, fields };
+            saveDatabase();
+            updateSidebar();
+            closeModal('formBuilderModal');
+            loadForm(formName);
+        }
+
+        function addQueryCondition() {
+            const queryConditions = document.getElementById('queryConditions');
+            const conditionDiv = document.createElement('div');
+            conditionDiv.className = 'form-field';
+            conditionDiv.innerHTML = `
+                <select class="field-select">
+                    <option value="">انتخاب فیلد</option>
+                </select>
+                <select>
+                    <option value="equals">مساوی</option>
+                    <option value="contains">شامل</option>
+                </select>
+                <input type="text" placeholder="مقدار">
+                <button onclick="this.parentElement.remove()">حذف</button>
+            `;
+            const tableName = document.getElementById('queryTable').value;
+            if (tableName && database.tables[tableName]) {
+                const select = conditionDiv.querySelector('.field-select');
+                database.tables[tableName].fields.forEach(field => {
+                    const option = document.createElement('option');
+                    option.value = field.name;
+                    option.textContent = field.name;
+                    select.appendChild(option);
+                });
+            }
+            queryConditions.appendChild(conditionDiv);
+        }
+
+        function runQuery() {
+            const queryName = document.getElementById('queryName').value.trim();
+            const tableName = document.getElementById('queryTable').value;
+            if (!tableName || !database.tables[tableName]) {
+                alert('جدول نامعتبر است.');
+                return;
+            }
+
+            const conditions = Array.from(document.getElementById('queryConditions').children).map(div => ({
+                field: div.querySelector('.field-select').value,
+                operator: div.querySelector('select').value,
+                value: div.querySelector('input').value.trim()
+            })).filter(c => c.field && c.value);
+
+            database.queries[queryName] = { table: tableName, conditions };
+            saveDatabase();
+            updateSidebar();
+
+            const records = database.tables[tableName].records.filter(record => {
+                return conditions.every(cond => {
+                    const fieldIndex = database.tables[tableName].fields.findIndex(f => f.name === cond.field);
+                    const value = record[fieldIndex];
+                    if (cond.operator === 'equals') return value === cond.value;
+                    if (cond.operator === 'contains') return value.toLowerCase().includes(cond.value.toLowerCase());
+                    return true;
+                });
+            });
+
+            displayQueryResults(records, database.tables[tableName].fields);
+            closeModal('queryBuilderModal');
+        }
+
+        function loadTable(tableName = document.getElementById('tableSelector').value) {
+            if (!tableName || !database.tables[tableName]) return;
+            currentTable = tableName;
+            document.getElementById('tableView').style.display = 'block';
+            document.getElementById('formView').style.display = 'none';
+            document.getElementById('queryView').style.display = 'none';
+
+            const table = database.tables[tableName];
+            const headerRow = table.fields.map(f => `<th>${f.name}</th>`).join('');
+            document.getElementById('tableHeader').innerHTML = `<tr>${headerRow}<th>عملیات</th></tr>`;
+            const bodyRows = table.records.map((record, index) => `
+                <tr>
+                    ${record.map(v => `<td>${v}</td>`).join('')}
+                    <td><button onclick="deleteRecord('${tableName}', ${index})">حذف</button></td>
+                </tr>
+            `).join('');
+            document.getElementById('tableBody').innerHTML = bodyRows;
+        }
+
+        function deleteRecord(tableName, index) {
+            database.tables[tableName].records.splice(index, 1);
+            saveDatabase();
+            loadTable(tableName);
+        }
+
+        function loadForm(formName) {
+            if (!database.forms[formName]) return;
+            currentForm = formName;
+            document.getElementById('tableView').style.display = 'none';
+            document.getElementById('formView').style.display = 'block';
+            document.getElementById('queryView').style.display = 'none';
+
+            const form = database.forms[formName];
+            const table = database.tables[form.table];
+            const formHtml = `
+                <h3>${formName}</h3>
+                <div class="form-builder">
+                    ${form.fields.map(f => `
+                        <div class="form-field">
+                            <label>${f.label}</label>
+                            <input type="${table.fields.find(field => field.name === f.field).type}" data-field="${f.field}">
+                        </div>
+                    `).join('')}
+                    <button onclick="submitForm('${formName}')">ثبت</button>
+                </div>
+            `;
+            document.getElementById('formView').innerHTML = formHtml;
+        }
+
+        function submitForm(formName) {
+            const form = database.forms[formName];
+            const table = database.tables[form.table];
+            const record = new Array(table.fields.length).fill('');
+            form.fields.forEach(f => {
+                const input = document.querySelector(`input[data-field="${f.field}"]`);
+                const fieldIndex = table.fields.findIndex(field => field.name === f.field);
+                const value = input.value.trim();
+                const type = table.fields[fieldIndex].type;
+                if (type === 'number' && isNaN(value)) {
+                    alert(`مقدار ${f.label} باید عدد باشد.`);
+                    return;
+                }
+                if (type === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                    alert(`مقدار ${f.label} باید به فرمت YYYY-MM-DD باشد.`);
+                    return;
+                }
+                record[fieldIndex] = value;
+            });
+            table.records.push(record);
+            saveDatabase();
+            loadTable(form.table);
+        }
+
+        function loadQuery(queryName) {
+            if (!database.queries[queryName]) return;
+            currentQuery = queryName;
+            document.getElementById('tableView').style.display = 'none';
+            document.getElementById('formView').style.display = 'none';
+            document.getElementById('queryView').style.display = 'block';
+
+            const query = database.queries[queryName];
+            const table = database.tables[query.table];
+            const records = table.records.filter(record => {
+                return query.conditions.every(cond => {
+                    const fieldIndex = table.fields.findIndex(f => f.name === cond.field);
+                    const value = record[fieldIndex];
+                    if (cond.operator === 'equals') return value === cond.value;
+                    if (cond.operator === 'contains') return value.toLowerCase().includes(cond.value.toLowerCase());
+                    return true;
+                });
+            });
+
+            displayQueryResults(records, table.fields);
+        }
+
+        function displayQueryResults(records, fields) {
+            document.getElementById('queryView').innerHTML = `
+                <h3>نتایج پرس‌وجو</h3>
+                <table>
+                    <thead><tr>${fields.map(f => `<th>${f.name}</th>`).join('')}</tr></thead>
+                    <tbody>${records.map(r => `<tr>${r.map(v => `<td>${v}</td>`).join('')}</tr>`).join('')}</tbody>
+                </table>
+            `;
+        }
+
+        function exportToJson() {
+            const dataStr = JSON.stringify(database, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'database.json';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function importFromJson(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    database = JSON.parse(e.target.result);
+                    saveDatabase();
+                    updateSidebar();
+                    updateTableSelector();
+                    alert('داده‌ها با موفقیت وارد شدند.');
+                } catch (err) {
+                    alert('خطا در خواندن فایل JSON.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function generateReport() {
+            if (!currentTable || !database.tables[currentTable]) {
+                alert('لطفاً یک جدول انتخاب کنید.');
+                return;
+            }
+
+            const table = database.tables[currentTable];
+            const doc = new jsPDF();
+            doc.setFont('Amiri', 'normal');
+            doc.setFontSize(16);
+            doc.text(`گزارش جدول: ${currentTable}`, 10, 10);
+            doc.setFontSize(12);
+            let y = 20;
+            doc.text(table.fields.map(f => f.name).join('\t'), 10, y);
+            y += 10;
+            table.records.forEach(record => {
+                doc.text(record.join('\t'), 10, y);
+                y += 10;
+            });
+            doc.save(`${currentTable}_report.pdf`);
+        }
+    </script>
+</body>
+</html>
+</xai

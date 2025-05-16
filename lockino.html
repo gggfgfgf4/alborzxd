@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS (Windows 11 Style)</title>
+  <style>
+    body {
+      background-image: url('background77.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    #enter-container {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      width: 320px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-avatar img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      margin: 0 auto 15px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.8s ease-out;
+      box-shadow:5px 10px 40px 20px rgb(67, 67, 67);
+    }
+
+    #password-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #password-input:focus {
+      border-color: #0078d4;
+    }
+
+    #hint {
+      color: #a3c9ff;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    #enter {
+      background: #0078d4;
+      color: #ffffff;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin-top: 10px;
+      display: none;
+      transition: background 0.3s;
+    }
+
+    #enter:hover {
+      background: #005ea2;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 10px;
+      text-align: center;
+      color: #ffffff;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>Rezno OS (Professional Edition)</header>
+  <div class="user-avatar">
+    <img src="user.jpg" alt="User Avatar">
+  </div>
+  <div id="enter-container">
+    <h3>AlmorsXD</h3>
+    <p id="hint">(راهنمای رمز: تاریخ کنونی آمریکا)</p>
+    <input type="password" id="password-input" placeholder="رمز عبور را وارد کنید">
+    <br>
+    <a href="home.html"><button id="enter">ورود</button></a>
+  </div>
+  <script>
+    const passwordInput = document.getElementById('password-input');
+    const enterButton = document.getElementById('enter');
+    
+    passwordInput.addEventListener('input', function() {
+      if (this.value === '2025') {
+        enterButton.style.display = 'inline-block';
+      } else {
+        enterButton.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

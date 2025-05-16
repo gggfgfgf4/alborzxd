@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+    body {
+        width: 100%;
+        height: 100vh;
+        background-image: url("background707.jpg");
+        margin: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    #heather {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 0, 0, 0.7);
+        color: #ffffff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    #heather:hover {
+        background: rgba(200, 0, 0, 0.7);
+    }
+
+    #app {
+        max-width: 1000px;
+        width: 90%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeIn 0.6s ease-out;
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toolbar {
+        background: rgba(0, 0, 0, 0.6);
+        color: #ffffff;
+        padding: 10px;
+        font-size: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    button, select, input {
+        background: #0078d4;
+        color: #ffffff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+        animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    button:hover {
+        background: #005ea2;
+        transform: scale(1.05);
+    }
+
+    button:active {
+        transform: scale(0.95);
+    }
+
+    select, input[type="number"] {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        padding: 6px 12px;
+    }
+
+    select option {
+        background: #1c2526;
+        color: #ffffff;
+    }
+
+    .main-container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+    }
+
+    .sidebar {
+        width: 220px;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        overflow-y: auto;
+    }
+
+    .slide-thumbnail {
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        position: relative;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .slide-thumbnail:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .slide-thumbnail.active {
+        border: 2px solid #0078d4;
+        background: rgba(0, 120, 212, 0.2);
+    }
+
+    .slide-thumbnail .slide-number {
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #ffffff;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .editor-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        overflow: auto;
+    }
+
+    .slide {
+        width: 90%;
+        height: 80%;
+        background: #ffffff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .slide-content {
+        flex: 1;
+        padding: 40px;
+        overflow: auto;
+        color: #1c2526;
+    }
+
+    .editable {
+        min-height: 20px;
+        outline: none;
+        margin: 5px 0;
+        border-radius: 4px;
+        padding: 4px;
+        transition: background 0.2s;
+    }
+
+    .editable:focus {
+        background: rgba(0, 120, 212, 0.1);
+    }
+
+    .slide-title {
+        font-size: 32px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #1c2526;
+    }
+
+    .status-bar {
+        background: rgba(0, 0, 0, 0.6);
+        color: #ffffff;
+        padding: 8px 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .color-picker {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .color-picker:hover {
+        transform: scale(1.1);
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        min-width: 160px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        padding: 8px;
+        border-radius: 8px;
+        margin-top: 4px;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .font-size-input {
+        width: 50px;
+        border-radius: 8px;
+    }
+
+    .thumbnail-content {
+        transform: scale(0.3);
+        transform-origin: top left;
+        width: 333%;
+        height: 333%;
+        pointer-events: none;
+    }
+
+    .thumbnail-wrapper {
+        width: 100%;
+        height: 80px;
+        overflow: hidden;
+        position: relative;
+        border-radius: 6px;
+    }
+</style>
+</head>
+<body>
+    <a href="home.html"><button id="heather">×</button></a>
+<div id="app">
+    <div class="toolbar">
+        <button id="new-presentation">جدید</button>
+        <button id="save-presentation">ذخیره</button>
+        <button id="open-presentation">باز کردن</button>
+        <input type="file" id="file-input" style="display: none;" accept=".json">
+        
+        <div class="dropdown">
+            <button>قالب‌ها</button>
+            <div class="dropdown-content">
+                <button data-layout="title">عنوان</button>
+                <button data-layout="title-content">عنوان و محتوا</button>
+                <button data-layout="section-header">سربرگ بخش</button>
+                <button data-layout="two-content">دو محتوا</button>
+                <button data-layout="blank">خالی</button>
+            </div>
+        </div>
+        
+        <button id="new-slide">اسلاید جدید</button>
+        <button id="delete-slide">حذف اسلاید</button>
+        
+        <select id="font-family">
+            <option value="Segoe UI">Segoe UI</option>
+            <option value="Tahoma">Tahoma</option>
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+        </select>
+        
+        <input type="number" id="font-size" class="font-size-input" value="18" min="8" max="72">
+        
+        <button id="bold">B</button>
+        <button id="italic">I</button>
+        <button id="underline">U</button>
+        
+        <div class="dropdown">
+            <button id="text-color">رنگ متن</button>
+            <div class="dropdown-content">
+                <div class="color-picker" style="background-color: #000000;" data-color="#000000"></div>
+                <div class="color-picker" style="background-color: #ffffff; border: 1px solid #ccc;" data-color="#ffffff"></div>
+                <div class="color-picker" style="background-color: #ff0000;" data-color="#ff0000"></div>
+                <div class="color-picker" style="background-color: #00ff00;" data-color="#00ff00"></div>
+                <div class="color-picker" style="background-color: #0000ff;" data-color="#0000ff"></div>
+                <div class="color-picker" style="background-color: #ffff00;" data-color="#ffff00"></div>
+                <div class="color-picker" style="background-color: #ff00ff;" data-color="#ff00ff"></div>
+                <div class="color-picker" style="background-color: #00ffff;" data-color="#00ffff"></div>
+            </div>
+        </div>
+        
+        <div class="dropdown">
+            <button id="bg-color">رنگ پس‌زمینه</button>
+            <div class="dropdown-content">
+                <div class="color-picker" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                <div class="color-picker" style="background-color: #000000;" data-color="#000000"></div>
+                <div class="color-picker" style="background-color: #fff4e5;" data-color="#fff4e5"></div>
+                <div class="color-picker" style="background-color: #e5f8ff;" data-color="#e5f8ff"></div>
+                <div class="color-picker" style="background-color: #f0ffe5;" data-color="#f0ffe5"></div>
+                <div class="color-picker" style="background-color: #ffe5f0;" data-color="#ffe5f0"></div>
+                <div class="color-picker" style="background-color: #f5f5f5;" data-color="#f5f5f5"></div>
+                <div class="color-picker" style="background-color: #e5e5e5;" data-color="#e5e5e5"></div>
+            </div>
+        </div>
+        
+        <button id="align-left">چپ‌چین</button>
+        <button id="align-center">وسط‌چین</button>
+        <button id="align-right">راست‌چین</button>
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar" id="slide-thumbnails">
+            <!-- اسلایدهای کوچک اینجا نمایش داده می‌شوند -->
+        </div>
+        
+        <div class="editor-area">
+            <div class="slide-container">
+                <div class="slide" id="current-slide">
+                    <div class="slide-content" id="slide-content">
+                        <!-- محتوای اسلاید اینجا نمایش داده می‌شود -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <span id="slide-position">اسلاید 1 از 1</span>
+                <span>microsoft powrepoint</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // وضعیت برنامه
+    const state = {
+        slides: [],
+        currentSlideIndex: 0,
+        selectedElement: null
+    };
+    
+    // مقداردهی اولیه
+    function init() {
+        createNewSlide('title');
+        updateUI();
+        
+        // رویدادهای نوار ابزار
+        document.getElementById('new-presentation').addEventListener('click', () => {
+            if (confirm('آیا می‌خواهید ارائه جدید ایجاد کنید؟ تغییرات ذخیره نشده از بین خواهند رفت.')) {
+                state.slides = [];
+                state.currentSlideIndex = 0;
+                createNewSlide('title');
+                updateUI();
+            }
+        });
+        
+        document.getElementById('new-slide').addEventListener('click', () => {
+            createNewSlide('title-content');
+            state.currentSlideIndex = state.slides.length - 1;
+            updateUI();
+        });
+        
+        document.getElementById('delete-slide').addEventListener('click', () => {
+            if (state.slides.length > 1) {
+                state.slides.splice(state.currentSlideIndex, 1);
+                if (state.currentSlideIndex >= state.slides.length) {
+                    state.currentSlideIndex = state.slides.length - 1;
+                }
+                updateUI();
+            } else {
+                alert('حداقل باید یک اسلاید وجود داشته باشد.');
+            }
+        });
+        
+        document.getElementById('save-presentation').addEventListener('click', savePresentation);
+        document.getElementById('open-presentation').addEventListener('click', () => {
+            document.getElementById('file-input').click();
+        });
+        
+        document.getElementById('file-input').addEventListener('change', openPresentation);
+        
+        // رویدادهای قالب‌بندی متن
+        document.getElementById('bold').addEventListener('click', () => toggleStyle('bold'));
+        document.getElementById('italic').addEventListener('click', () => toggleStyle('italic'));
+        document.getElementById('underline').addEventListener('click', () => toggleStyle('underline'));
+        
+        document.getElementById('font-family').addEventListener('change', () => {
+            applyStyle('fontFamily', document.getElementById('font-family').value);
+        });
+        
+        document.getElementById('font-size').addEventListener('change', () => {
+            applyStyle('fontSize', document.getElementById('font-size').value + 'px');
+        });
+        
+        document.getElementById('align-left').addEventListener('click', () => {
+            applyStyle('textAlign', 'left');
+        });
+        
+        document.getElementById('align-center').addEventListener('click', () => {
+            applyStyle('textAlign', 'center');
+        });
+        
+        document.getElementById('align-right').addEventListener('click', () => {
+            applyStyle('textAlign', 'right');
+        });
+        
+        // رویدادهای رنگ
+        document.querySelectorAll('.color-picker[data-color]').forEach(picker => {
+            picker.addEventListener('click', (e) => {
+                const color = e.target.getAttribute('data-color');
+                if (e.target.parentElement.id === 'text-color') {
+                    applyStyle('color', color);
+                } else {
+                    applyStyle('backgroundColor', color);
+                }
+            });
+        });
+        
+        // رویدادهای قالب‌ها
+        document.querySelectorAll('[data-layout]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const layout = e.target.getAttribute('data-layout');
+                changeSlideLayout(layout);
+            });
+        });
+        
+        // رویدادهای انتخاب عناصر
+        document.getElementById('slide-content').addEventListener('click', (e) => {
+            if (e.target.classList.contains('editable')) {
+                selectElement(e.target);
+            }
+        });
+    }
+    
+    // ایجاد اسلاید جدید
+    function createNewSlide(layout = 'title-content') {
+        const slide = {
+            id: Date.now(),
+            layout: layout,
+            content: '',
+            backgroundColor: '#ffffff'
+        };
+        
+        state.slides.push(slide);
+        renderSlideContent(slide);
+    }
+    
+    // تغییر چیدمان اسلاید فعلی
+    function changeSlideLayout(layout) {
+        const slide = state.slides[state.currentSlideIndex];
+        slide.layout = layout;
+        renderSlideContent(slide);
+        updateUI();
+    }
+    
+    // رندر محتوای اسلاید
+    function renderSlideContent(slide) {
+        let content = '';
+        
+        switch (slide.layout) {
+            case 'title':
+                content = `
+                    <div class="editable slide-title" contenteditable="true" style="font-size: 44px; text-align: center; margin-bottom: 20px;">عنوان اسلاید</div>
+                `;
+                break;
+                
+            case 'title-content':
+                content = `
+                    <div class="editable slide-title" contenteditable="true" style="font-size: 44px; text-align: center; margin-bottom: 20px;">عنوان اسلاید</div>
+                    <div class="editable" contenteditable="true" style="font-size: 24px; text-align: right;">متن محتوا اینجا قرار می‌گیرد. می‌توانید این متن را ویرایش کنید.</div>
+                `;
+                break;
+                
+            case 'section-header':
+                content = `
+                    <div class="editable" contenteditable="true" style="font-size: 32px; color: #0078d4; margin-bottom: 30px;">سربرگ بخش</div>
+                    <div class="editable" contenteditable="true" style="font-size: 24px; text-align: right;">متن محتوا اینجا قرار می‌گیرد.</div>
+                `;
+                break;
+                
+            case 'two-content':
+                content = `
+                    <div style="display: flex; height: 100%;">
+                        <div class="editable" contenteditable="true" style="flex: 1; padding: 10px; font-size: 20px; border-right: 1px dashed #ccc;">محتوا 1</div>
+                        <div class="editable" contenteditable="true" style="flex: 1; padding: 10px; font-size: 20px;">محتوا 2</div>
+                    </div>
+                `;
+                break;
+                
+            case 'blank':
+                content = '';
+                break;
+        }
+        
+        slide.content = content;
+        
+        if (state.slides[state.currentSlideIndex].id === slide.id) {
+            document.getElementById('slide-content').innerHTML = content;
+            document.getElementById('current-slide').style.backgroundColor = slide.backgroundColor;
+        }
+    }
+    
+    // به‌روزرسانی UI
+    function updateUI() {
+        // به‌روزرسانی اسلایدهای کوچک
+        const thumbnailsContainer = document.getElementById('slide-thumbnails');
+        thumbnailsContainer.innerHTML = '';
+        
+        state.slides.forEach((slide, index) => {
+            const thumbnail = document.createElement('div');
+            thumbnail.className = `slide-thumbnail ${index === state.currentSlideIndex ? 'active' : ''}`;
+            thumbnail.innerHTML = `
+                <div class="thumbnail-wrapper">
+                    <div class="thumbnail-content">
+                        ${slide.content}
+                    </div>
+                </div>
+                <div class="slide-number">${index + 1}</div>
+            `;
+            
+            thumbnail.addEventListener('click', () => {
+                state.currentSlideIndex = index;
+                updateUI();
+            });
+            
+            thumbnailsContainer.appendChild(thumbnail);
+        });
+        
+        // به‌روزرسانی اسلاید فعلی
+        const currentSlide = state.slides[state.currentSlideIndex];
+        document.getElementById('slide-content').innerHTML = currentSlide.content;
+        document.getElementById('current-slide').style.backgroundColor = currentSlide.backgroundColor;
+        
+        // به‌روزرسانی وضعیت
+        document.getElementById('slide-position').textContent = `اسلاید ${state.currentSlideIndex + 1} از ${state.slides.length}`;
+    }
+    
+    // انتخاب عنصر برای ویرایش
+    function selectElement(element) {
+        state.selectedElement = element;
+        
+        // به‌روزرسانی نوار ابزار با وضعیت عنصر انتخاب شده
+        if (element.style.fontWeight === 'bold') {
+            document.getElementById('bold').style.backgroundColor = '#005ea2';
+        } else {
+            document.getElementById('bold').style.backgroundColor = '';
+        }
+        
+        if (element.style.fontStyle === 'italic') {
+            document.getElementById('italic').style.backgroundColor = '#005ea2';
+        } else {
+            document.getElementById('italic').style.backgroundColor = '';
+        }
+        
+        if (element.style.textDecoration.includes('underline')) {
+            document.getElementById('underline').style.backgroundColor = '#005ea2';
+        } else {
+            document.getElementById('underline').style.backgroundColor = '';
+        }
+        
+        if (element.style.textAlign) {
+            document.getElementById(`align-${element.style.textAlign}`).style.backgroundColor = '#005ea2';
+        }
+    }
+    
+    // اعمال استایل به عنصر انتخاب شده
+    function applyStyle(property, value) {
+        if (state.selectedElement) {
+            state.selectedElement.style[property] = value;
+            
+            // ذخیره تغییرات در مدل داده
+            const currentSlide = state.slides[state.currentSlideIndex];
+            currentSlide.content = document.getElementById('slide-content').innerHTML;
+        }
+    }
+    
+    // تغییر وضعیت استایل (مانند bold/italic/underline)
+    function toggleStyle(style) {
+        if (state.selectedElement) {
+            switch (style) {
+                case 'bold':
+                    if (state.selectedElement.style.fontWeight === 'bold') {
+                        state.selectedElement.style.fontWeight = '';
+                        document.getElementById('bold').style.backgroundColor = '';
+                    } else {
+                        state.selectedElement.style.fontWeight = 'bold';
+                        document.getElementById('bold').style.backgroundColor = '#005ea2';
+                    }
+                    break;
+                    
+                case 'italic':
+                    if (state.selectedElement.style.fontStyle === 'italic') {
+                        state.selectedElement.style.fontStyle = '';
+                        document.getElementById('italic').style.backgroundColor = '';
+                    } else {
+                        state.selectedElement.style.fontStyle = 'italic';
+                        document.getElementById('italic').style.backgroundColor = '#005ea2';
+                    }
+                    break;
+                    
+                case 'underline':
+                    if (state.selectedElement.style.textDecoration.includes('underline')) {
+                        state.selectedElement.style.textDecoration = '';
+                        document.getElementById('underline').style.backgroundColor = '';
+                    } else {
+                        state.selectedElement.style.textDecoration = 'underline';
+                        document.getElementById('underline').style.backgroundColor = '#005ea2';
+                    }
+                    break;
+            }
+            
+            // ذخیره تغییرات در مدل داده
+            const currentSlide = state.slides[state.currentSlideIndex];
+            currentSlide.content = document.getElementById('slide-content').innerHTML;
+        }
+    }
+    
+    // ذخیره ارائه
+    function savePresentation() {
+        const presentation = {
+            version: '1.0',
+            slides: state.slides
+        };
+        
+        const data = JSON.stringify(presentation);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'presentation.ppt2006.pptx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // باز کردن ارائه
+    function openPresentation(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const presentation = JSON.parse(e.target.result);
+                if (presentation.version === '1.0' && Array.isArray(presentation.slides)) {
+                    state.slides = presentation.slides;
+                    state.currentSlideIndex = 0;
+                    updateUI();
+                } else {
+                    alert('فایل معتبر نیست.');
+                }
+            } catch (error) {
+                alert('خطا در خواندن فایل: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+    
+    // راه‌اندازی برنامه
+    window.onload = init;
+</script>
+</body>
+</html>

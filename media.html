@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS Media Player (Windows 11 Style)</title>
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      background-image: url("background707.jpg");
+      margin: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #heather {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 0, 0, 0.7);
+      color: #ffffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    #heather:hover {
+      background: rgba(200, 0, 0, 0.7);
+    }
+
+    .player-container {
+      width: 400px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.6s ease-out;
+      overflow: hidden;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title-bar {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 5px;
+    }
+
+    .window-control {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .window-control:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .content {
+      padding: 15px;
+      color: #ffffff;
+    }
+
+    .media-selector {
+      margin-bottom: 15px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    select option {
+      background: #1f1f1f;
+      color: #ffffff;
+    }
+
+    .media-display {
+      background: #000;
+      height: 250px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .media-display #placeholder {
+      color: #d1d1d1;
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background: #0078d4;
+      border: none;
+      padding: 8px 16px;
+      color: #ffffff;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: background 0.2s, transform 0.2s;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    button:hover {
+      background: #005ea2;
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #0078d4;
+      transition: width 0.3s ease;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #d1d1d1;
+      margin-bottom: 10px;
+    }
+
+    .status-bar {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 5px 10px;
+      font-size: 12px;
+      color: #ffffff;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 500px) {
+      .player-container {
+        width: 90%;
+      }
+      .media-display {
+        height: 180px;
+      }
+      select, button {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="home.html"><button id="heather">×</button></a>
+  <div class="player-container">
+    <div class="title-bar">
+      <span>پخش‌کننده رسانه Rezno OS</span>
+      <div class="window-controls">
+      </div>
+    </div>
+    <div class="content">
+      <div class="media-selector">
+        <select id="mediaSelector">
+          <option value="">-- رسانه را انتخاب کنید --</option>
+          <optgroup label="آهنگ‌ها">
+            <option value="voice1.mp3">دونه دونه</option>
+            <option value="voice2.mp3">کل هفته رو</option>
+          </optgroup>
+          <optgroup label="ویدیوها">
+            <option value="vid1.mp4">جبران گل ‌به‌خودی آزادی برابر گل‌گهر ناکام ماند</option>
+            <option value="vid2.mp4">آموزش قدم به قدم اسمبل کامپیوتر</option>
+            <option value="vid3.mp4">نصب ویندوز ایکس پی روی حافظه اس اس دی</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="media-display">
+        <video id="mediaElement" style="display:none; max-width:100%; max-height:100%;"></video>
+        <audio id="audioElement" style="display:none;"></audio>
+        <div id="placeholder">رسانه‌ای انتخاب نشده است</div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="time-display">
+        <span id="currentTime">00:00</span>
+        <span id="duration">00:00</span>
+      </div>
+      <div class="controls">
+        <button id="playBtn">پخش</button>
+        <button id="pauseBtn">توقف</button>
+        <button id="stopBtn">ایست</button>
+        <button id="volumeDownBtn">صدای کمتر</button>
+        <button id="volumeUpBtn">صدای بیشتر</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span id="statusText">آماده</span>
+    </div>
+  </div>
+
+  <script>
+    const mediaSelector = document.getElementById('mediaSelector');
+    const mediaElement = document.getElementById('mediaElement');
+    const audioElement = document.getElementById('audioElement');
+    const placeholder = document.getElementById('placeholder');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const volumeUpBtn = document.getElementById('volumeUpBtn');
+    const volumeDownBtn = document.getElementById('volumeDownBtn');
+    const progressBar = document.getElementById('progressBar');
+    const currentTimeDisplay = document.getElementById('currentTime');
+    const durationDisplay = document.getElementById('duration');
+    const statusText = document.getElementById('statusText');
+
+    const mediaLibrary = {
+      "voice1.mp3": {
+        title: "دونه دونه",
+        type: "audio",
+        url: "voice1.mp3"
+      },
+      "voice2.mp3": {
+        title: "کل هفته رو",
+        type: "audio",
+        url: "voice2.mp3"
+      },
+      "vid1.mp4": {
+        title: "جبران گل ‌به‌خودی آزادی برابر گل‌گهر ناکام ماند",
+        type: "video",
+        url: "vid1.mp4"
+      },
+      "vid2.mp4": {
+        title: "آموزش قدم به قدم اسمبل کامپیوتر",
+        type: "video",
+        url: "vid2.mp4"
+      },
+      "vid3.mp4": {
+        title: "نصب ویندوز ایکس پی روی حافظه اس اس دی",
+        type: "video",
+        url: "vid3.mp4"
+      }
+    };
+
+    mediaSelector.addEventListener('change', function() {
+      const selectedMedia = this.value;
+      if (!selectedMedia) {
+        mediaElement.style.display = 'none';
+        audioElement.style.display = 'none';
+        placeholder.style.display = 'block';
+        statusText.textContent = 'آماده';
+        progressBar.style.width = '0%';
+        currentTimeDisplay.textContent = '00:00';
+        durationDisplay.textContent = '00:00';
+        return;
+      }
+
+      const mediaInfo = mediaLibrary[selectedMedia];
+      if (!mediaInfo) return;
+
+      statusText.textContent = 'در حال بارگذاری...';
+
+      if (mediaInfo.type === 'video') {
+        audioElement.pause();
+        audioElement.style.display = 'none';
+        mediaElement.style.display = 'block';
+        placeholder.style.display = 'none';
+        mediaElement.src = mediaInfo.url;
+        mediaElement.load();
+        mediaElement.onloadeddata = function() {
+          statusText.textContent = `ویدیو: ${mediaInfo.title}`;
+          updateDuration();
+        };
+      } else {
+        mediaElement.pause();
+        mediaElement.style.display = 'none';
+        audioElement.style.display = 'block';
+        placeholder.style.display = 'none';
+        audioElement.src = mediaInfo.url;
+        audioElement.load();
+        audioElement.onloadeddata = function() {
+          statusText.textContent = `آهنگ: ${mediaInfo.title}`;
+          updateDuration();
+        };
+      }
+    });
+
+    playBtn.addEventListener('click', function() {
+      if (mediaElement.style.display === 'block') {
+        mediaElement.play();
+        statusText.textContent = `در حال پخش: ${mediaLibrary[mediaSelector.value]?.title || 'ویدیو'}`;
+      } else if (audioElement.style.display === 'block') {
+        audioElement.play();
+        statusText.textContent = `در حال پخش: ${mediaLibrary[mediaSelector.value]?.title || 'آهنگ'}`;
+      }
+    });
+
+    pauseBtn.addEventListener('click', function() {
+      if (mediaElement.style.display === 'block') {
+        mediaElement.pause();
+        statusText.textContent = `متوقف شده: ${mediaLibrary[mediaSelector.value]?.title || 'ویدیو'}`;
+      } else if (audioElement.style.display === 'block') {
+        audioElement.pause();
+        statusText.textContent = `متوقف شده: ${mediaLibrary[mediaSelector.value]?.title || 'آهنگ'}`;
+      }
+    });
+
+    stopBtn.addEventListener('click', function() {
+      if (mediaElement.style.display === 'block') {
+        mediaElement.pause();
+        mediaElement.currentTime = 0;
+        statusText.textContent = `ایست: ${mediaLibrary[mediaSelector.value]?.title || 'ویدیو'}`;
+      } else if (audioElement.style.display === 'block') {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+        statusText.textContent = `ایست: ${mediaLibrary[mediaSelector.value]?.title || 'آهنگ'}`;
+      }
+      progressBar.style.width = '0%';
+      currentTimeDisplay.textContent = '00:00';
+    });
+
+    volumeUpBtn.addEventListener('click', function() {
+      if (mediaElement.style.display === 'block' && mediaElement.volume < 1) {
+        mediaElement.volume = Math.min(1, mediaElement.volume + 0.1);
+      } else if (audioElement.style.display === 'block' && audioElement.volume < 1) {
+        audioElement.volume = Math.min(1, audioElement.volume + 0.1);
+      }
+    });
+
+    volumeDownBtn.addEventListener('click', function() {
+      if (mediaElement.style.display === 'block' && mediaElement.volume > 0) {
+        mediaElement.volume = Math.max(0, mediaElement.volume - 0.1);
+      } else if (audioElement.style.display === 'block' && audioElement.volume > 0) {
+        audioElement.volume = Math.max(0, audioElement.volume - 0.1);
+      }
+    });
+
+    function updateProgress() {
+      let currentTime, duration;
+      if (mediaElement.style.display === 'block') {
+        currentTime = mediaElement.currentTime;
+        duration = mediaElement.duration;
+      } else if (audioElement.style.display === 'block') {
+        currentTime = audioElement.currentTime;
+        duration = audioElement.duration;
+      } else {
+        return;
+      }
+
+      if (duration > 0) {
+        const progressPercent = (currentTime / duration) * 100;
+        progressBar.style.width = progressPercent + '%';
+        currentTimeDisplay.textContent = formatTime(currentTime);
+        durationDisplay.textContent = formatTime(duration);
+      }
+    }
+
+    function updateDuration() {
+      let duration;
+      if (mediaElement.style.display === 'block') {
+        duration = mediaElement.duration;
+      } else if (audioElement.style.display === 'block') {
+        duration = audioElement.duration;
+      } else {
+        return;
+      }
+      durationDisplay.textContent = formatTime(duration);
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      seconds = Math.floor(seconds % 60);
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    setInterval(updateProgress, 500);
+  </script>
+</body>
+</html>

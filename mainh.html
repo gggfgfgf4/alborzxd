@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+	body{
+		width: 1920;
+		height: 1080;
+		background-image:url("bbback of u.png");
+		margin: 0;
+        background-size: cover; 
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+	}
+	
+	#taskbar{
+		background: #c40000;
+		width:1920;
+        bottom: 0;
+		text-align: center;
+        border-bottom: 3px solid rgb(204, 0, 0);
+        border-bottom-left-radius: 0.5px;
+        border-bottom-right-radius: 0.5px;
+	}
+
+	#botton-container {
+        text-align: center;
+        position: relative;
+        display: inline-block;
+    }
+    #botton {
+        background: #8b3232;
+        color: #000000;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: 3px outset #db3131;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-family: "Times New Roman", Times, serif;
+    }
+    #botton:hover {
+        background: #570000;
+        border: 3px inset #ff7a7a;
+    }
+    #botton:active {
+        background: #7f3737;
+        border: 3px inset #612a2a;
+    }
+    .close-btn {
+        position: absolute;
+        right: -15px;
+        top: -10px;
+        background: #ff0000;
+        color: white;
+        border: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+    }
+    .form-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 3px solid #580000;
+        background: #8b3232;
+        padding: 20px;
+        z-index: 9;
+    }
+    .form-container input[type=text] {
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #580000;
+        background: #f1f1f1;
+    }
+    .form-container .btn {
+        background: #8b3232;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<div id="taskbar">
+<div id="start0A0time">	<div id="start">
+    <div id="botton-container">
+        <button id="botton">normal mode</button>
+        <button class="close-btn">×</button>
+    </div>
+<div class="timebar" id="MyClockDisplay">وقتی بتونم بهت راهنما میفرستم.بخونش</div>
+</div>
+</div>
+
+<div id="myForm" class="form-popup">
+  <form class="form-container">
+    <h3>فرم چالش نهایی</h3>
+    <label for="code"><b>کد را وارد کنید:</b></label>
+    <input type="text" placeholder="کد را وارد کنید" id="code" required>
+    <button type="button" class="btn" id="submitCode">تایید</button>
+  </form>
+</div>
+
+<script>
+// تابع برای دانلود فایل راهنما از سرور
+function downloadGuide() {
+    // ایجاد یک لینک مخفی برای دانلود فایل راهنمای موجود در سرور
+    const a = document.createElement('a');
+    a.href = 'راهنما.txt'; // مسیر فایل راهنما در سرور
+    a.download = 'راهنما.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// دانلود خودکار پس از 1 دقیقه
+setTimeout(downloadGuide, 2000);
+
+// متغیرهای مربوط به چالش
+let clickCount = 0;
+const normalBtn = document.getElementById('botton');
+const closeBtn = document.querySelector('.close-btn');
+const formPopup = document.getElementById('myForm');
+
+// رویداد کلیک روی دکمه normal mode
+normalBtn.addEventListener('click', function() {
+    clickCount++; 
+    if(clickCount >= 42) {
+        formPopup.style.display = 'block';
+    }
+});
+
+// رویداد کلیک روی دکمه ضربدر
+closeBtn.addEventListener('click', function() {
+    // بستن پنجره (در اینجا فقط دکمه را مخفی می‌کنیم)
+    closeBtn.style.display = 'none';
+    normalBtn.textContent = 'normal mode';
+});
+
+// رویداد تایید کد در فرم
+document.getElementById('submitCode').addEventListener('click', function() {
+    const code = document.getElementById('code').value;
+    if(code === '76752') {
+        window.location.href = 'endino.html';
+    } else {
+        alert('کد اشتباه است!');
+    }
+});
+</script>
+
+</body>
+</html>

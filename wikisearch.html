@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 100%;
+            height: 100vh;
+            background-image: url("background707.jpg");
+            margin: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #heather {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.7);
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        #heather:hover {
+            background: rgba(200, 0, 0, 0.7);
+        }
+
+        #app {
+            max-width: 1000px;
+            width: 90%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toolbar {
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            padding: 10px;
+            font-size: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: center;
+        }
+
+        .search-box {
+            display: flex;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px 0 0 8px;
+            font-size: 14px;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        #search-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #search-button {
+            background: #0078d4;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s, transform 0.2s;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        #search-button:hover {
+            background: #005ea2;
+            transform: scale(1.05);
+        }
+
+        #search-button:active {
+            transform: scale(0.95);
+        }
+
+        .main-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 600;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-title {
+            color: #0078d4;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .result-title a {
+            color: #0078d4;
+            text-decoration: none;
+        }
+
+        .result-title a:hover {
+            text-decoration: underline;
+        }
+
+        .result-snippet {
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #cccccc;
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #0078d4;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-bar {
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html"><button id="heather">×</button></a>
+    <div id="app">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="موضوع مورد نظر را جستجو کنید...">
+                <button id="search-button">جستجو</button>
+            </div>
+        </div>
+        <div class="main-container">
+            <h1>جستجوی ویکی‌پدیا</h1>
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>در حال جستجو...</p>
+            </div>
+            <div class="results" id="results">
+                <!-- نتایج جستجو اینجا نمایش داده می‌شوند -->
+            </div>
+        </div>
+        <div class="status-bar">
+            <span>wikipedia</span>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            const resultsContainer = document.getElementById('results');
+            const loadingElement = document.querySelector('.loading');
+
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+
+            function performSearch() {
+                const query = searchInput.value.trim();
+
+                if (query === '') {
+                    alert('لطفاً عبارت جستجو را وارد کنید');
+                    return;
+                }
+
+                loadingElement.style.display = 'block';
+                resultsContainer.innerHTML = '';
+
+                fetch(`https://fa.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`)
+                    .then(response => response.json())
+                    .then(data => {
+                        loadingElement.style.display = 'none';
+
+                        if (data.query.search.length === 0) {
+                            resultsContainer.innerHTML = '<div class="no-results">نتیجه‌ای یافت نشد</div>';
+                            return;
+                        }
+
+                        data.query.search.forEach(result => {
+                            const resultElement = document.createElement('div');
+                            resultElement.className = 'result-item';
+                            resultElement.innerHTML = `
+                                <h3 class="result-title">
+                                    <a href="https://fa.wikipedia.org/wiki/${encodeURIComponent(result.title)}" target="_blank">
+                                        ${result.title}
+                                    </a>
+                                </h3>
+                                <div class="result-snippet">${result.snippet}...</div>
+                            `;
+                            resultElement.style.animation = 'fadeIn 0.3s ease-out';
+                            resultsContainer.appendChild(resultElement);
+                        });
+                    })
+                    .catch(error => {
+                        loadingElement.style.display = 'none';
+                        resultsContainer.innerHTML = `<div class="no-results">خطا در دریافت نتایج: ${error.message}</div>`;
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

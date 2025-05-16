@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS (Windows 11 Style)</title>
+  <style>
+    /* استایل منوی راست‌کلیک - بسیار مهم */
+    .context-menu {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #d1d1d1;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      width: 220px;
+      padding: 6px 0;
+      display: none;
+      z-index: 9999;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .context-menu-item {
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+      transition: all 0.2s;
+    }
+
+    .context-menu-item:hover {
+      background: #f0f7ff;
+      color: #0066cc;
+    }
+
+    .context-menu-item h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: normal;
+      flex-grow: 1;
+    }
+
+    .context-menu-item button {
+      background: none;
+      border: none;
+      font-size: 11px;
+      color: #666;
+      padding: 0 8px;
+    }
+
+    /* سایر استایل‌ها همانطور که بودند */
+    body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    /* ... سایر استایل‌ها ... */
+  </style>
+</head>
+<body>
+  <!-- منوی راست کلیک با ساختار اصلاح شده -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" onclick="openApp('ppt.html')">
+      <h3>پاورپوینت جدید</h3>
+      <button>PowerPoint</button>
+    </div>
+    <div class="context-menu-item" onclick="openApp('word.html')">
+      <h3>ورد جدید</h3>
+      <button>Word</button>
+    </div>
+    <div class="context-menu-item" onclick="openApp('vs-code.html')">
+      <h3>کد جدید</h3>
+      <button>VS Code</button>
+    </div>
+    <div class="context-menu-item" onclick="openApp('P-S.html')">
+      <h3>پروژه جدید</h3>
+      <button>Photoshop</button>
+    </div>
+  </div>
+
+  <!-- محتوای دیگر صفحه -->
+  <div id="iframeContainer"></div>
+  <!-- ... سایر المان‌ها ... -->
+
+  <script>
+    // تابع برای باز کردن برنامه‌ها
+    function openApp(url) {
+      window.location.href = url;
+      hideContextMenu();
+    }
+
+    // مدیریت منوی راست کلیک - نسخه اصلاح شده
+    const contextMenu = document.getElementById('contextMenu');
+    
+    // نمایش منو با راست کلیک
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      
+      // مختصات دقیق با در نظر گرفتن اسکرول صفحه
+      const x = e.pageX;
+      const y = e.pageY;
+      
+      // تنظیم موقعیت منو با بررسی مرزهای صفحه
+      contextMenu.style.left = `${Math.min(x, window.innerWidth - contextMenu.offsetWidth - 5)}px`;
+      contextMenu.style.top = `${Math.min(y, window.innerHeight - contextMenu.offsetHeight - 5)}px`;
+      
+      contextMenu.style.display = 'block';
+    });
+
+    // مخفی کردن منو با کلیک در هر جای صفحه
+    document.addEventListener('click', function(e) {
+      if (contextMenu.style.display === 'block') {
+        hideContextMenu();
+      }
+    });
+
+    // مخفی کردن منو با فشار دادن کلید ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && contextMenu.style.display === 'block') {
+        hideContextMenu();
+      }
+    });
+
+    // تابع کمکی برای مخفی کردن منو
+    function hideContextMenu() {
+      contextMenu.style.display = 'none';
+    }
+
+    // جلوگیری از پخش رویداد کلیک روی منو
+    contextMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    /* سایر توابع و منطق برنامه ... */
+  </script>
+</body>
+</html>

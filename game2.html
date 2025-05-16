@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezno OS Circle Game (Windows 11 Style)</title>
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      background-image: url("gameb2.png");
+      margin: 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #heather {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 0, 0, 0.7);
+      color: #ffffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    #heather:hover {
+      background: rgba(200, 0, 0, 0.7);
+    }
+
+    .window {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.6s ease-out;
+      width: 90vw;
+      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title-bar {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      text-align: center;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #game-container {
+      width: 100%;
+      height: 90vw;
+      max-height: 500px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+
+    .circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: background 0.2s, transform 0.2s;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .circle:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .circle:active {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(0.95);
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 16px;
+      color: #ffffff;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px 20px;
+      border-radius: 8px;
+      max-width: 80%;
+      transition: opacity 0.3s;
+    }
+
+    .shape {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: popIn 0.5s ease-out;
+    }
+
+    .square {
+      width: 150px;
+      height: 150px;
+      background: #ff5555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .triangle {
+      width: 0;
+      height: 0;
+      border-left: 75px solid transparent;
+      border-right: 75px solid transparent;
+      border-bottom: 150px solid #0078d4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .triangle-text {
+      position: absolute;
+      top: 60px;
+      left: -50px;
+      width: 100px;
+      text-align: center;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .circle {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+      }
+      #message {
+        font-size: 14px;
+      }
+      .square {
+        width: 100px;
+        height: 100px;
+        font-size: 16px;
+      }
+      .triangle {
+        border-left: 50px solid transparent;
+        border-right: 50px solid transparent;
+        border-bottom: 100px solid #0078d4;
+      }
+      .triangle-text {
+        top: 40px;
+        left: -40px;
+        width: 80px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="gameland.html"><button id="heather">×</button></a>
+  <div class="window">
+    <div class="title-bar">بازی دایره‌های Rezno OS</div>
+    <div id="game-container"></div>
+    <div id="message">برای شروع بازی روی یکی از دایره‌ها کلیک کنید</div>
+  </div>
+
+  <script>
+    let circles = 6;
+    const gameContainer = document.getElementById('game-container');
+    const messageDiv = document.getElementById('message');
+
+    function createCircles() {
+      gameContainer.innerHTML = '';
+      for (let i = 1; i <= circles; i++) {
+        const circle = document.createElement('div');
+        circle.className = 'circle';
+        circle.textContent = i;
+        circle.onclick = () => selectCircle(circle);
+        gameContainer.appendChild(circle);
+      }
+    }
+
+    function showShape(shape) {
+      const shapeDiv = document.createElement('div');
+      shapeDiv.className = 'shape';
+      if (shape === 'square') {
+        shapeDiv.innerHTML = '<div class="square">شما باختید!</div>';
+      } else if (shape === 'triangle') {
+        shapeDiv.innerHTML = '<div class="triangle"><div class="triangle-text">شما بردید!</div></div>';
+      }
+      gameContainer.innerHTML = '';
+      gameContainer.appendChild(shapeDiv);
+    }
+
+    function selectCircle(selectedCircle) {
+      const correctCircleIndex = Math.floor(Math.random() * circles);
+      const correctCircle = gameContainer.children[correctCircleIndex];
+
+      if (selectedCircle === correctCircle) {
+        circles--;
+        messageDiv.textContent = 'انتخاب درست! یکی از دایره‌ها کم شد.';
+      } else {
+        circles++;
+        messageDiv.textContent = 'انتخاب اشتباه! یکی از دایره‌ها اضافه شد.';
+      }
+
+      if (circles <= 1) {
+        messageDiv.textContent = 'بازی تمام شد! شما برنده شدید.';
+        showShape('triangle');
+      } else if (circles >= 11) {
+        messageDiv.textContent = 'بازی تمام شد! شما باختید.';
+        showShape('square');
+      } else {
+        createCircles();
+      }
+    }
+
+    createCircles();
+  </script>
+</body>
+</html>

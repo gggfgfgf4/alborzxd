@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>چالش نهایی | 2+2=؟</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOV5n5bgAAe4DvNAG7AFwJ2x9L7gAAAABJRU5ErkJggg=='), auto;
+        }
+        
+        #container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+        }
+        
+        h1 {
+            font-size: 3em;
+            text-shadow: 0 0 10px #ff0000;
+            animation: glitch 1s linear infinite;
+            margin-bottom: 30px;
+        }
+        
+        #question {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: flicker 0.01s infinite;
+        }
+        
+        #answer {
+            background: #111;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            padding: 10px 20px;
+            font-size: 1.5em;
+            width: 100px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        #submit {
+            background: #ff0000;
+            color: #000;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #submit:hover {
+            background: #000;
+            color: #ff0000;
+            box-shadow: 0 0 20px #ff0000;
+        }
+        
+        #error {
+            color: #ff0000;
+            font-size: 1.2em;
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .blood {
+            position: absolute;
+            background-color: #ff0000;
+            opacity: 0.7;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 5px 0 0px #00f, -5px 0 0px #0f0; }
+            25% { text-shadow: -5px 0 0px #00f, 5px 0 0px #0f0; }
+            50% { text-shadow: 5px 0 0px #00f, -5px 0 0px #0f0; }
+            75% { text-shadow: -5px 0 0px #00f, 5px 0 0px #0f0; }
+            100% { text-shadow: 5px 0 0px #00f, -5px 0 0px #0f0; }
+        }
+        
+        @keyframes flicker {
+            0% { opacity: 0.8; }
+            50% { opacity: 0.2; }
+            100% { opacity: 0.8; }
+        }
+        
+        #whisper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8em;
+            opacity: 0.5;
+            transform: rotate(-5deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>چالش نهایی</h1>
+        <div id="question">2 + 2 = ?</div>
+        <input type="text" id="answer" autocomplete="off">
+        <button id="submit">تایید</button>
+        <div id="error">اشتباه است... دوباره تلاش کن</div>
+    </div>
+
+    <script>
+        // ایجاد اثر خون روی صفحه
+        document.addEventListener('mousemove', function(e) {
+            if(Math.random() > 0.97) {
+                const blood = document.createElement('div');
+                blood.classList.add('blood');
+                blood.style.left = e.pageX + 'px';
+                blood.style.top = e.pageY + 'px';
+                blood.style.width = Math.random() * 30 + 10 + 'px';
+                blood.style.height = blood.style.width;
+                document.body.appendChild(blood);
+                
+                setTimeout(() => {
+                    blood.style.opacity = '0';
+                    blood.style.transform = 'scale(2)';
+                    setTimeout(() => blood.remove(), 1000);
+                }, 100);
+            }
+        });
+        
+        // صدای ترسناک پس زمینه
+        const audio = new Audio('sound.mp3');
+        audio.loop = true;
+        audio.volume = 0.3;
+        
+        // شروع پخش صدا با اولین تعامل کاربر
+        document.addEventListener('click', function() {
+            audio.play().catch(e => console.log('Auto-play prevented'));
+        }, { once: true });
+        
+        // بررسی پاسخ
+        document.getElementById('submit').addEventListener('click', function() {
+            const answer = document.getElementById('answer').value.trim();
+            const error = document.getElementById('error');
+            
+            if(answer === '5') {
+                // پاسخ صحیح - هدایت به صفحه رمزی
+                document.body.style.animation = 'flash 0.5s';
+                setTimeout(() => {
+                    window.location.href = 'jfngfgf.html';
+                }, 500);
+            } else {
+                // پاسخ اشتباه - نمایش خطا و اثر خون
+                error.style.display = 'block';
+                document.getElementById('answer').style.borderColor = '#ff0000';
+                
+                // ایجاد خون بیشتر
+                for(let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const blood = document.createElement('div');
+                        blood.classList.add('blood');
+                        blood.style.left = Math.random() * window.innerWidth + 'px';
+                        blood.style.top = Math.random() * window.innerHeight + 'px';
+                        blood.style.width = Math.random() * 50 + 20 + 'px';
+                        blood.style.height = blood.style.width;
+                        document.body.appendChild(blood);
+                        
+                        setTimeout(() => {
+                            blood.style.opacity = '0';
+                            blood.style.transform = 'scale(2)';
+                            setTimeout(() => blood.remove(), 1000);
+                        }, 100);
+                    }, i * 100);
+                }
+            }
+        });
+        
+        // فشار دادن Enter نیز پاسخ را بررسی کند
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                document.getElementById('submit').click();
+            }
+        });
+    </script>
+</body>
+</html>
